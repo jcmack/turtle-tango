@@ -1,0 +1,697 @@
+<!--
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Turtle Tango - It takes two to code!</title>
+    <script type="text/javascript" src="../blockly_uncompressed.js"></script>
+    <script type="text/javascript" src="../generators/python.js"></script>
+    <script type="text/javascript" src="../generators/python/logic.js"></script>
+    <script type="text/javascript" src="../generators/python/loops.js"></script>
+    <script type="text/javascript" src="../generators/python/math.js"></script>
+    <script type="text/javascript" src="../generators/python/text.js"></script>
+    <script type="text/javascript" src="../generators/python/lists.js"></script>
+    <script type="text/javascript" src="../generators/python/colour.js"></script>
+    <script type="text/javascript" src="../generators/python/variables.js"></script>
+    <script type="text/javascript" src="../generators/python/procedures.js"></script>
+    <script type="text/javascript" src="../generators/python/turtle.js"></script>
+    <script type="text/javascript" src="../msg/messages.js"></script>
+    <script type="text/javascript" src="../blocks/logic.js"></script>
+    <script type="text/javascript" src="../blocks/loops.js"></script>
+    <script type="text/javascript" src="../blocks/math.js"></script>
+    <script type="text/javascript" src="../blocks/text.js"></script>
+    <script type="text/javascript" src="../blocks/lists.js"></script>
+    <script type="text/javascript" src="../blocks/colour.js"></script>
+    <script type="text/javascript" src="../blocks/variables.js"></script>
+    <script type="text/javascript" src="../blocks/procedures.js"></script>
+    <script type="text/javascript" src="../blocks/turtle.js"></script>
+    <!-- Load the Google Drive SDK Realtime libraries. -->
+    <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+    <script type="text/javascript" src="../jquery.min.js"></script>
+    <script type="text/javascript" src="../bootstrap.min.js"></script>
+    <script type="text/javascript" src="../peer.js"></script>
+    <script type="text/javascript" src="../skulpt.min.js"></script>
+    <script type="text/javascript" src="../skulpt-stdlib.js" ></script>
+
+    <script type="text/javascript">
+        'use strict';
+
+        var block = null;
+
+        function enableRealtimeSpecificUi() {
+            var realtimeDiv = document.getElementById('realtime');
+            realtimeDiv.display = 'block';
+        }
+
+        function start() {
+            var toolbox = document.getElementById('toolbox');
+            Blockly.inject(document.getElementById('blocklyDiv'),
+                    {rtl: false,
+                        media: '../media/',
+                        toolbox: toolbox,
+                        comments: true,
+                        disable: true,
+                        collapse: true,
+                        realtime: true,
+                        realtimeOptions:
+                        {clientId: '731144988352-dpq2cle7uemff3jmu1c6bp1oh3la4868.apps.googleusercontent.com',
+                            chatbox: {elementId: 'chatbox'},
+                            collabElementId: 'collaborators'}});
+            if (Blockly.Realtime.isEnabled()) {
+                enableRealtimeSpecificUi();
+            }
+
+        }
+
+        function toCode() {
+            var workspaceCode;
+            try {
+                workspaceCode = Blockly["Python"].workspaceToCode();
+            }
+            catch(err){
+                workspaceCode = ""
+            }
+            if(workspaceCode == "")
+                workspaceCode = 't.forward(1)'
+            return 'import turtle\n'
+                    + 't = turtle.Turtle()\n'
+                    + workspaceCode;
+        }
+
+        var remotePairingUrl;
+        function url(){
+            remotePairingUrl = window.location.href;
+        }
+
+        peer.on('open', function(id) {
+            console.log('my id is ' + id);
+
+        });
+
+        function saveSnapshot(){
+            var div = document.getElementById("turtleCanvas");
+            var canvas = div.getElementsByTagName("canvas");
+            var dataURL = canvas[1].toDataURL();
+            document.getElementById('canvasImg').src = dataURL;
+        }
+
+    </script>
+
+    <style>
+        html, body {
+            width:  100%;
+            height: 100%;
+            margin: 0px;
+        }
+        body {
+            background-color: #fff;
+            font-family: sans-serif;
+            overflow: hidden;
+        }
+        h1 {
+            font-weight: normal;
+            font-size: 180%;
+        }
+        #blocklyDiv {
+            float: right;
+            height: 95%;
+            width: 50%;
+        }
+        #collaborators {
+            float: right;
+            width: 30px;
+            margin-left: 10px;
+        }
+        #collaborators > img {
+            margin-right: 5px;
+            height: 30px;
+            padding-bottom: 5px;
+            width: 30px;
+            border-radius: 3px;
+        }
+        #turtleCanvas {
+            height: 20%;
+            width: 46%;
+            border-style: solid;
+        }
+        #turtleCodeDiv {
+            font-family: monospace;
+        }
+        #turtleCodeSpan{
+            height: 200px;
+            width: 400px;
+            position: relative;
+            margin: 10% auto;
+        }
+        .modalWindow {
+            position: fixed;
+            font-family: arial;
+            font-size:80%;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: rgba(0,0,0,0.2);
+            z-index: 99999;
+            opacity:0;
+            -webkit-transition: opacity 400ms ease-in;
+            -moz-transition: opacity 400ms ease-in;
+            transition: opacity 400ms ease-in;
+            pointer-events: none;
+        }
+        .modalHeader h2 { color: #189CDA; border-bottom: 2px groove #efefef; }
+        .modalWindow:target {
+            opacity:1;
+            pointer-events: auto;
+        }
+        .modalWindow > div {
+            width: 500px;
+            position: relative;
+            margin: 10% auto;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+            background: #fff;
+        }
+        .modalWindow .modalHeader  {	padding: 5px 20px 0px 20px;	}
+        .modalWindow .modalContent {	padding: 0px 20px 5px 20px;	}
+        .modalWindow .modalFooter  {	padding: 8px 20px 8px 20px;	}
+        .modalFooter {
+            background: #F1F1F1;
+            border-top: 1px solid #999;
+            -moz-box-shadow: inset 0px 13px 12px -14px #888;
+            -webkit-box-shadow: inset 0px 13px 12px -14px #888;
+            box-shadow: inset 0px 13px 12px -14px #888;
+        }
+        .modalFooter p {
+            color:#D4482D;
+            text-align:right;
+            margin:0;
+            padding: 5px;
+        }
+        .ok, .close, .cancel {
+            background: #606061;
+            color: #FFFFFF;
+            line-height: 25px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            border-radius: 2px;
+            -moz-box-shadow: 1px 1px 3px #000;
+            -webkit-box-shadow: 1px 1px 3px #000;
+            box-shadow: 1px 1px 3px #000;
+        }
+        .close {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            width: 22px;
+            height: 22px;
+            font-size: 10px;
+
+        }
+        .ok, .cancel {
+            width:80px;
+            float:right;
+            margin-left:20px;
+        }
+        .ok:hover { background: #189CDA; }
+        .close:hover, .cancel:hover { background: #D4482D; }
+        .clear { float:none; clear: both; }
+    </style>
+</head>
+
+<body onload="start();drawTurtle()">
+
+<div id="collaborators"></div>
+
+<div id="blocklyDiv"></div>
+
+<xml id="toolbox" style="display: none">
+    <category name="Turtle">
+        <block type="turtle_forward"></block>
+        <block type="turtle_forward_adv"></block>
+        <block type="turtle_pen_color"></block>
+        <block type="turtle_turn"></block>
+        <block type="turtle_turn_left"></block>
+        <block type="turtle_turn_right"></block>
+        <block type="turtle_pen_up"></block>
+        <block type="turtle_pen_down"></block>
+    </category>
+    <category name="Logic">
+        <block type="controls_if"></block>
+        <block type="logic_compare"></block>
+        <block type="logic_operation"></block>
+        <block type="logic_negate"></block>
+        <block type="logic_boolean"></block>
+        <block type="logic_null"></block>
+        <block type="logic_ternary"></block>
+    </category>
+    <category name="Loops">
+        <block type="controls_repeat_ext">
+            <value name="TIMES">
+                <block type="math_number">
+                    <field name="NUM">10</field>
+                </block>
+            </value>
+        </block>
+        <block type="controls_whileUntil"></block>
+        <block type="controls_for">
+            <value name="FROM">
+                <block type="math_number">
+                    <field name="NUM">1</field>
+                </block>
+            </value>
+            <value name="TO">
+                <block type="math_number">
+                    <field name="NUM">10</field>
+                </block>
+            </value>
+            <value name="BY">
+                <block type="math_number">
+                    <field name="NUM">1</field>
+                </block>
+            </value>
+        </block>
+        <block type="controls_forEach"></block>
+        <block type="controls_flow_statements"></block>
+    </category>
+    <category name="Math">
+        <block type="math_number"></block>
+        <block type="math_arithmetic"></block>
+        <block type="math_single"></block>
+        <block type="math_trig"></block>
+        <block type="math_constant"></block>
+        <block type="math_number_property"></block>
+        <block type="math_change">
+            <value name="DELTA">
+                <block type="math_number">
+                    <field name="NUM">1</field>
+                </block>
+            </value>
+        </block>
+        <block type="math_round"></block>
+        <block type="math_on_list"></block>
+        <block type="math_modulo"></block>
+        <block type="math_constrain">
+            <value name="LOW">
+                <block type="math_number">
+                    <field name="NUM">1</field>
+                </block>
+            </value>
+            <value name="HIGH">
+                <block type="math_number">
+                    <field name="NUM">100</field>
+                </block>
+            </value>
+        </block>
+        <block type="math_random_int">
+            <value name="FROM">
+                <block type="math_number">
+                    <field name="NUM">1</field>
+                </block>
+            </value>
+            <value name="TO">
+                <block type="math_number">
+                    <field name="NUM">100</field>
+                </block>
+            </value>
+        </block>
+        <block type="math_random_float"></block>
+    </category>
+    <category name="Text">
+        <block type="text"></block>
+        <block type="text_join"></block>
+        <block type="text_append">
+            <value name="TEXT">
+                <block type="text"></block>
+            </value>
+        </block>
+        <block type="text_length"></block>
+        <block type="text_isEmpty"></block>
+        <block type="text_indexOf">
+            <value name="VALUE">
+                <block type="variables_get">
+                    <field name="VAR">text</field>
+                </block>
+            </value>
+        </block>
+        <block type="text_charAt">
+            <value name="VALUE">
+                <block type="variables_get">
+                    <field name="VAR">text</field>
+                </block>
+            </value>
+        </block>
+        <block type="text_getSubstring">
+            <value name="STRING">
+                <block type="variables_get">
+                    <field name="VAR">text</field>
+                </block>
+            </value>
+        </block>
+        <block type="text_changeCase"></block>
+        <block type="text_trim"></block>
+        <block type="text_print"></block>
+        <block type="text_prompt_ext">
+            <value name="TEXT">
+                <block type="text"></block>
+            </value>
+        </block>
+    </category>
+    <category name="Lists">
+        <block type="lists_create_empty"></block>
+        <block type="lists_create_with"></block>
+        <block type="lists_repeat">
+            <value name="NUM">
+                <block type="math_number">
+                    <field name="NUM">5</field>
+                </block>
+            </value>
+        </block>
+        <block type="lists_length"></block>
+        <block type="lists_isEmpty"></block>
+        <block type="lists_indexOf">
+            <value name="VALUE">
+                <block type="variables_get">
+                    <field name="VAR">list</field>
+                </block>
+            </value>
+        </block>
+        <block type="lists_getIndex">
+            <value name="VALUE">
+                <block type="variables_get">
+                    <field name="VAR">list</field>
+                </block>
+            </value>
+        </block>
+        <block type="lists_setIndex">
+            <value name="LIST">
+                <block type="variables_get">
+                    <field name="VAR">list</field>
+                </block>
+            </value>
+        </block>
+        <block type="lists_getSublist">
+            <value name="LIST">
+                <block type="variables_get">
+                    <field name="VAR">list</field>
+                </block>
+            </value>
+        </block>
+    </category>
+    <category name="Color">
+        <block type="colour_picker"></block>
+        <block type="colour_random"></block>
+        <block type="colour_rgb">
+            <value name="RED">
+                <block type="math_number">
+                    <field name="NUM">100</field>
+                </block>
+            </value>
+            <value name="GREEN">
+                <block type="math_number">
+                    <field name="NUM">50</field>
+                </block>
+            </value>
+            <value name="BLUE">
+                <block type="math_number">
+                    <field name="NUM">0</field>
+                </block>
+            </value>
+        </block>
+        <block type="colour_blend">
+            <value name="COLOUR1">
+                <block type="colour_picker">
+                    <field name="COLOUR">#ff0000</field>
+                </block>
+            </value>
+            <value name="COLOUR2">
+                <block type="colour_picker">
+                    <field name="COLOUR">#3333ff</field>
+                </block>
+            </value>
+            <value name="RATIO">
+                <block type="math_number">
+                    <field name="NUM">0.5</field>
+                </block>
+            </value>
+        </block>
+    </category>
+    <category name="Variables" custom="VARIABLE"></category>
+    <category name="Functions" custom="PROCEDURE"></category>
+</xml>
+
+<div id="headerDiv" align="center">
+    <table>
+        <tr>
+            <td style="padding-right: 30px;"><img src="../media/turtle-large.png"/></td>
+            <td style="padding-right: 30px;"><h1>Turtle Tango</h1></td>
+            <td style="padding-right: 30px;"><p>id: <span id="my-id">...</span></p></td>
+        </tr>
+    </table>
+
+</div>
+<!-- PeerJS id -->
+<div align="justify">
+    <p>Turtle Tango is easy way to learn to program with your friend Google Docs style!
+        Share this webpage with a friend, add their id to your session and start dragging
+        and dropping. You can even save your drawing and see what your code looks like in Python!</p>
+</div>
+
+<div id="realtime" style="display: none">
+    <pre id="output"></pre>
+    <!-- If you want turtle graphics include a canvas -->
+    <div id="turtleCanvas" align="center"></div>
+
+    <div id="dashboard" align="center">
+    <input type="image" src="../media/pen.jpg" title="start turtle drawing"
+           style="width: 30px; height: 30px;" onclick="drawTurtle();sendMsg()"/>
+
+    <a href="#connectModal"><input type="image" src="../media/add_friend.png" title="set up a webcam session with a friend"
+                                   style="width: 30px; height: 30px;" onclick="url()"/></a>
+
+    <a href="#pythonModal"><input type="image" src="../media/download.png" title="show your python code"
+                                  style="width: 30px; height: 30px;" onclick="url(); $('#turtleCodeSpan').val(toCode());"/></a>
+
+        <!--<input type="image" src="../media/link.png" title="generate an easy to remember link"
+               style="width: 30px; height: 30px;" onclick="alert()"/>-->
+
+        <a href="#snapshotModal"><input type="image" src="../media/camera.png" title="take a snapshot of your drawing"
+                                      style="width: 30px; height: 30px;" onclick="url();saveSnapshot()"/></a>
+    </div>
+</div>
+
+<div id="connectModal" class="modalWindow">
+    <div>
+        <div class="modalHeader">
+            <h2>Connect to a Friend</h2>
+            <a href="#close" title="Close" class="close" onclick="this.href = remotePairingUrl">X</a>
+        </div>
+
+        <div class="modalContent">
+            <p>Share your video and audio with your friend by providing their id below!</p>
+            <div class="pure-form">
+                <input type="text" placeholder="Peer Id" id="peer-id" width="100%">
+            </div>
+        </div>
+
+        <div class="modalFooter">
+            <a href="#" title="Cancel" class="cancel" onclick="this.href = remotePairingUrl">Cancel</a>
+            <a href="#" title="Ok" class="ok" id="connectModalOk" onclick="this.href = remotePairingUrl;">Ok</a>
+            <p>Connect to peer?</p>
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>
+
+<div id="pythonModal" class="modalWindow">
+    <div>
+        <div class="modalHeader">
+            <h2>From Blocks to Python</h2>
+            <a href="#close" title="Close" class="close" onclick="this.href = remotePairingUrl">X</a>
+        </div>
+
+        <div class="modalContent">
+            <p>Here is what your code looks like in Python!</p>
+        </div>
+
+        <div class="modalContent" id="turtleCodeDiv" align="center">
+            <textarea id="turtleCodeSpan">...</textarea>
+        </div>
+
+        <div class="modalFooter">
+            <a href="#" title="Ok" class="ok" onclick="this.href = remotePairingUrl">Ok</a>
+            <p>Return to drawing?</p>
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>
+
+<div id="snapshotModal" class="modalWindow">
+    <div>
+        <div class="modalHeader">
+            <h2>Taking a Snapshot of Your Work</h2>
+            <a href="#close" title="Close" class="close" onclick="this.href = remotePairingUrl">X</a>
+        </div>
+
+        <div class="modalContent">
+            <p>Here is what you have drawn so far. Right-click and select "Save image as..." to download your drawing.</p>
+
+            <img id="canvasImg" alt="Right-click to save me!">
+
+        </div>
+
+        <div class="modalFooter">
+            <a href="#" title="Ok" class="ok" onclick="this.href = remotePairingUrl">Ok</a>
+            <p>Return to drawing?</p>
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>
+
+<div align="center">
+    <video id="my-video" width="10%" height="10%" muted="true" autoplay></video>
+    <!-- Text area that will be used for our collaborative chat box. -->
+    <textarea id="chatbox" style="width: 15%; height: 6em" disabled="true"></textarea>
+    <video id="peer-video" width="10%" height="10%" autoplay></video>
+</div>
+<br>
+
+<!-- PeerJS -->
+<script>
+    // compatibility shim
+    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia
+    || navigator.mozGetUserMedia;
+
+    var peer = new Peer({key: '15clzh6neaqestt9'});
+    peer.on('open', function(id) {
+        console.log('my id is ' + id);
+        $('#my-id').text(id);
+    });
+
+    function sendMsg() {
+        if(peerConn != null)
+            peerConn.send("hey peer, draw turtle");
+        console.log("no peer connection defined.")
+    }
+
+    navigator.getUserMedia({audio: true, video: true}, function (stream) {
+        $('#my-video').prop('src', URL.createObjectURL(stream));
+        window.localStream = stream;
+    }, function () {
+    });
+
+    function startMediaSession (call) {
+        console.log("starting media session...");
+        // Hang up on an existing call if present
+        if (window.existingCall) {
+            window.existingCall.close();
+        }
+
+        // Wait for stream on the call, then set peer video display
+        call.on('stream', function (stream) {
+            $('#peer-video').prop('src', URL.createObjectURL(stream));
+        });
+    }
+
+    var peerConn;
+    $(function() {
+        //connect to peer
+        $('#connectModalOk').click(function () {
+            console.log(remotePairingUrl);
+            var peerId = $('#peer-id').val().trim();
+            $('#peer-id').val("");
+            console.log('connecting to ' + peerId + "...");
+            peerConn = peer.connect(peerId);
+
+            peerConn.on('open', function() {
+                console.log('connected to ' + peerId + '!');
+                var call = peer.call(peerConn.peer, window.localStream);
+                startMediaSession(call);
+            });
+
+            //check for connection errors: peer-unavailable
+            peer.on('error', function(err) {
+                console.log(err.type);
+            });
+        });
+    });
+
+    //receive the chat msg
+    peer.on('connection', function(conn) {
+        if(peerConn == null) {
+            var peerId = conn.peer;
+            console.log("new data connection from " + peerId);
+            peerConn = peer.connect(peerId);
+        }
+        conn.on('data', function(chatMsg){
+            drawTurtle()
+            console.log(chatMsg);
+        });
+    });
+
+    // Receiving a call
+    peer.on('call', function(call){
+        call.answer(window.localStream);
+        startMediaSession(call);
+
+    });
+
+</script>
+
+<!-- Skulpt -->
+<script type="text/javascript">
+    // output functions are configurable.  This one just appends some text
+    // to a pre element.
+    function outf(text) {
+        var mypre = document.getElementById("output");
+        mypre.innerHTML = mypre.innerHTML + text;
+    }
+    function builtinRead(x) {
+        if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+            throw "File not found: '" + x + "'";
+        return Sk.builtinFiles["files"][x];
+    }
+
+    // Here's everything you need to run a python program in skulpt
+    // grab the code from your textarea
+    // get a reference to your pre element for output
+    // configure the output function
+    // call Sk.importMainWithBody()
+    function drawTurtle() {
+        var prog = toCode();
+        console.log('generated python script\n' + prog)
+        var mypre = document.getElementById("output");
+        mypre.innerHTML = '';
+        Sk.pre = "output";
+        Sk.configure({output:outf, read:builtinRead});
+
+        (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'turtleCanvas';
+        var myPromise = Sk.misceval.asyncToPromise(function() {
+            return Sk.importMainWithBody("<stdin>", false, prog, true);
+        });
+        myPromise.then(function(mod) {
+                    console.log('successfully rendered turtle');
+                },
+                function(err) {
+                    console.log(err.toString());
+                });
+    }
+</script>
+</body>
+</html>
