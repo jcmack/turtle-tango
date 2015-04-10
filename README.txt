@@ -9,28 +9,24 @@ you to load the program on any computer.
 To run your own App Engine instance you'll need to create this directory
 structure:
 
-blockly/
+default/
  |- app.yaml
  |- index.yaml
  |- index_redirect.py
  |- README.txt
  |- storage.js
  |- storage.py
- |- closure-library/  (Optional)
+ |- closure-library/
  `- static/
      |- apps/
      |- blocks/
      |- core/
-     |- demos/
      |- generators/
      |- media/
      |- msg/
-     |- tests/
      |- blockly_compressed.js
-     |- blockly_uncompressed.js  (Optional)
+     |- blockly_uncompressed.js
      |- blocks_compressed.js
-     |- dart_compressed.js
-     |- javascript_compressed.js
      `- python_compressed.js
 
 Instructions for fetching Closure may be found here:
