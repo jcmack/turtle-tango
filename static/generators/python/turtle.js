@@ -10,8 +10,26 @@ Blockly.Python['turtle_forward_adv'] = function(block) {
     return code;
 };
 
+Blockly.Python['turtle_set_pen_thickness'] = function(block) {
+    var width = block.getFieldValue('THICKNESS');
+    var code = 't.pensize(' + width + ')\n';
+    return code;
+};
+
+Blockly.Python['turtle_set_pen_thickness_adv'] = function(block) {
+    var width = Blockly.Python.valueToCode(block, 'THICKNESS', Blockly.Python.ORDER_ATOMIC);
+    var code = 't.pensize(' + width + ')\n';
+    return code;
+};
+
 Blockly.Python['turtle_turn'] = function(block) {
     var angle_degrees = block.getFieldValue('DEGREES');
+    var code = 't.right(' + angle_degrees + ')\n';
+    return code;
+};
+
+Blockly.Python['turtle_turn_adv'] = function(block) {
+    var angle_degrees = Blockly.Python.valueToCode(block, 'DEGREES', Blockly.Python.ORDER_ATOMIC);
     var code = 't.right(' + angle_degrees + ')\n';
     return code;
 };
@@ -19,6 +37,12 @@ Blockly.Python['turtle_turn'] = function(block) {
 Blockly.Python['turtle_pen_color'] = function(block) {
     var pen_color = block.getFieldValue('COLOR');
     var code = 't.pencolor("' + pen_color + '")\n';
+    return code;
+};
+
+Blockly.Python['turtle_pen_color_adv'] = function(block) {
+    var pen_color = Blockly.Python.valueToCode(block, 'COLOR', Blockly.Python.ORDER_ATOMIC);
+    var code = 't.pencolor(' + pen_color + ')\n';
     return code;
 };
 

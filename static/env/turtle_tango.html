@@ -244,13 +244,19 @@ limitations under the License.
 <xml id="toolbox" style="display: none">
     <category name="Turtle">
         <block type="turtle_forward"></block>
-        <block type="turtle_forward_adv"></block>
         <block type="turtle_pen_color"></block>
         <block type="turtle_turn"></block>
         <block type="turtle_turn_left"></block>
         <block type="turtle_turn_right"></block>
         <block type="turtle_pen_up"></block>
         <block type="turtle_pen_down"></block>
+        <block type="turtle_set_pen_thickness"></block>
+    </category>
+    <category name="Adv Turtle">
+        <block type="turtle_forward_adv"></block>
+        <block type="turtle_turn_adv"></block>
+        <block type="turtle_set_pen_thickness_adv"></block>
+        <block type="turtle_pen_color_adv"></block>
     </category>
     <category name="Logic">
         <block type="controls_if"></block>
@@ -468,9 +474,9 @@ limitations under the License.
 </div>
 <!-- PeerJS id -->
 <div align="justify">
-    <p>Turtle Tango is easy way to learn to program with your friend Google Docs style!
+    <p>Turtle Tango is an easy way to learn to program with your friend Google Docs style!
         Share this webpage with a friend, add their id to your session and start dragging
-        and dropping. You can even save your drawing and see what your code looks like in Python!</p>
+        and dropping your code. You can even save your drawing and see what your code looks like in Python!</p>
 </div>
 
 <div id="realtime" style="display: none">
@@ -499,7 +505,7 @@ limitations under the License.
 <div id="connectModal" class="modalWindow">
     <div>
         <div class="modalHeader">
-            <h2>Connect to a Friend</h2>
+            <h2>Add a Friend</h2>
             <a href="#close" title="Close" class="close" onclick="this.href = remotePairingUrl">X</a>
         </div>
 

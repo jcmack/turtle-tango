@@ -22,12 +22,47 @@ Blockly.Blocks['turtle_forward_adv'] = {
     }
 };
 
+Blockly.Blocks['turtle_set_pen_thickness'] = {
+    init: function() {
+        this.setColour(120);
+        this.appendDummyInput()
+            .appendField("set pen thickness")
+            .appendField(new Blockly.FieldTextInput("2"), "THICKNESS");
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setTooltip('set the pen thickness');
+    }
+};
+
+Blockly.Blocks['turtle_set_pen_thickness_adv'] = {
+    init: function () {
+        this.setColour(120);
+        this.appendValueInput("THICKNESS")
+            .setCheck("Number")
+            .appendField("set pen thickness");
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setTooltip('set the pen thickness');
+    }
+};
+
 Blockly.Blocks['turtle_turn'] = {
     init: function () {
         this.setColour(120);
         this.appendDummyInput()
             .appendField("turn")
             .appendField(new Blockly.FieldAngle("90"), "DEGREES");
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setTooltip('');
+    }
+};
+
+Blockly.Blocks['turtle_turn_adv'] = {
+    init: function () {
+        this.setColour(120);
+        this.appendValueInput("DEGREES")
+            .appendField("turn");
         this.setPreviousStatement(true);
         this.setNextStatement(true);
         this.setTooltip('');
@@ -42,7 +77,18 @@ Blockly.Blocks['turtle_pen_color'] = {
             .appendField(new Blockly.FieldColour("#ff0000"), "COLOR");
         this.setPreviousStatement(true);
         this.setNextStatement(true);
-        this.setTooltip('');
+        this.setTooltip('change the turtle pen color');
+    }
+};
+
+Blockly.Blocks['turtle_pen_color_adv'] = {
+    init: function() {
+        this.setColour(120);
+        this.appendValueInput("COLOR")
+            .appendField("set pen color");
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setTooltip('change the turtle pen color');
     }
 };
 
